@@ -1,13 +1,592 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
+
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>병원</title>
 </head>
+
+<style>
+    header {
+        width: 100%;
+        height: 20%;
+        background-color: white;
+        color: blue;
+    }
+
+    input[id="menuicon"] {
+        display: none;
+    }
+
+    input[id="menuicon"]+label {
+        display: block;
+        width: 60px;
+        height: 40px;
+        position: relative;
+    }
+
+    .sidenav {
+
+        color: white;
+        font-size: medium;
+        list-style: none;
+        overflow-y: scroll;
+        text-align: center;
+
+        a {
+            text-decoration-line: none;
+            color: white;
+            font-size: medium;
+        }
+
+    }
+
+    a {
+        text-decoration-line: none;
+    }
+
+    footer {
+        left: 192px;
+        height: 25%;
+        width: 100%;
+        background-color: rgb(213, 211, 211);
+        color: black;
+        position: fixed;
+        bottom: 0px;
+    }
+
+    .information {
+        align-content: left;
+    }
+
+    #map {
+        left: 185px;
+        width: 91%;
+        height: 623px;
+    }
+
+    .internalElements {
+        color: white;
+        font-size: medium;
+        list-style: none;
+        overflow-y: scroll;
+        text-align: center;
+
+        a {
+            text-decoration-line: none;
+            color: white;
+            font-size: medium;
+        }
+
+    }
+
+    .menuBlock {
+        border-style: solid;
+        border-width: 2px;
+        border-color: white;
+        display: block;
+        width: 120px;
+        height: 40px;
+        list-style: none;
+        margin: 20px 15px 20px 15px;
+        padding: 30px;
+
+    }
+
+
+    input[id="menuicon"] {
+        display: none;
+
+    }
+
+    input[id="menuicon"]+label {
+        display: block;
+        width: 60px;
+        height: 40px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    input[id="menuicon"]+label span {
+        text-decoration-line: none;
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 5px;
+        border-radius: 30px;
+        background: #000;
+        transition: all 3s;
+    }
+
+    input[id="menuicon"]+label span:nth-child(1) {
+        top: 0;
+    }
+
+    input[id="menuicon"]+label span:nth-child(2) {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    input[id="menuicon"]+label span:nth-child(3) {
+        bottom: 0;
+    }
+
+    input[id="menuicon"]:checked+label span:nth-child(1) {
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+    }
+
+    input[id="menuicon"]:checked+label span:nth-child(2) {
+        opacity: 0;
+    }
+
+    input[id="menuicon"]:checked+label span:nth-child(3) {
+        bottom: 50%;
+        transform: translateY(-50%) rotate(-45deg);
+    }
+
+
+    div[class="sidebar"] {
+        width: 250px;
+        height: 100%;
+        background: #222;
+        position: fixed;
+        top: 0;
+        left: -300px;
+        Z-index: 1;
+        transition: all .35s;
+    }
+
+    input[id="menuicon"]:checked+label+div {
+        left: 0;
+    }
+
+    input[id="menuicon"]+label {
+        display: block;
+        width: 60px;
+        height: 50px;
+        position: fixed;
+        left: 10px;
+        top: 20px   ;
+        transition: all .35s;
+        cursor: pointer;
+    }
+
+    input[id="menuicon"]:checked+label {
+        z-index: 2;
+        left: 300px;
+    }
+
+    .parents {
+        display: flex;
+    }
+
+    .child {
+        width: 240px;
+        height: 200px;
+        border: 1px solid black;
+    }
+
+    #infoList li {
+        list-style: none;
+    }
+
+    #infoList .item {
+        position: relative;
+        border-bottom: 1px solid #888;
+        overflow: hidden;
+        cursor: pointer;
+        min-height: 65px;
+    }
+
+    #infoList .item span {
+        display: block;
+        margin-top: 4px;
+    }
+
+    #infoList .item h5,
+    #infoList .item .info {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    #infoList .item .info {
+        padding: 10px 0 10px 55px;
+    }
+
+    #infoList .info .gray {
+        color: #8a8a8a;
+    }
+
+    #infoList .info .jibun {
+        padding-left: 26px;
+        background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;
+    }
+
+    #infoList .info .tel {
+        color: #009900;
+    }
+
+    .info {
+        width: 240px;
+        height: 200px;
+        border: 1px solid black;
+    }
+
+    #sidebarTitle {
+        color: white;
+
+    }
+
+    body {
+        -ms-overflow-style: none;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
 <body>
-    hi
+
+    <header>
+        <h1 align="center">천안 시내 병원 찾기</h1>
+    </header>
+
+    <aside>
+        <input type="checkbox" id="menuicon">
+        <label for="menuicon">
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </label>
+        <div class="sidebar" style="z-index: 10;">
+
+            <div id="sidebarTitle">
+                <h3>병원종류</h3>
+            </div>
+            <div id="mySidenav" class="sidenav" text-decoration-line: none;>
+                <span id="단국대학교 병원" class="menuBlock">
+                    <li><a href="javascript:clicked('단국대학교 병원')">단국대학교 병원</a></li>
+                </span>
+                <span id="내과" class="menuBlock">
+                    <li><a href="javascript:clicked('내과')">내과</a></li>
+                </span>
+                <span id="안과" class="menuBlock">
+                    <li><a href="javascript:clicked('안과')">안과</a></li>
+                </span>
+                <span id="이비인후과" class="menuBlock">
+                    <li><a href="javascript:clicked('이비인후과')">이비인후과</a></li>
+                </span>
+                <span id="정형외과" class="menuBlock">
+                    <li><a href="javascript:clicked('정형외과')">정형외과</a></li>
+                </span>
+                <span id="소아과" class="menuBlock">
+                    <li><a href="javascript:clicked('소아과')">소아과</a></li>
+                </span>
+                <span id="신경외과" class="menuBlock">
+                    <li><a href="javascript:clicked('신경외과')">신경외과</a></li>
+                </span>
+
+
+            </div>
+    </aside>
+
+    <div id="map"></div>
+
+    <div class="parents" id="infoList" style="overflow-x :scroll;">
+
+    </div>
+
+    <script type="text/javascript"
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=2f3b9e8b1598b7c8f56563623515e28c"></script>
+    <script>
+        var mapContainer = document.getElementById('map');
+        var mapOption = {
+            center: new kakao.maps.LatLng(36.841051, 127.181859),
+            mapTypeId: kakao.maps.MapTypeId.ROADMAP
+        };
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+        var markers = []; // 마커를 담을 배열
+
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var userLatLng = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+                var userMarker = new kakao.maps.Marker({
+                    map: map,
+                    position: userLatLng,
+                    title: '현재 위치',
+                    image: new kakao.maps.MarkerImage(
+                        'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+                        new kakao.maps.Size(32, 34),
+                        {
+                            offset: new kakao.maps.Point(32, 34),
+                            alt: '현재 위치 마커',
+                        }
+                    ),
+                });
+
+                map.setCenter(userLatLng);
+            });
+        };
+
+        function showHospitals(keyword) {
+            // 기존 마커 및 정보창 제거
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+
+            // 선택한 키워드에 해당하는 병원 정보
+            var hospitals = [];
+
+            // 키워드 설정하고 그 키워드 클릭 시 그에 맞는 마커 출력 기능
+            if (keyword === '단국대학교 병원') {
+                hospitals.push({
+                    content: '<div>단국대학교 병원</div>',
+                    latlng: new kakao.maps.LatLng(36.842086, 127.172522),
+                    name: "단국대학교 병원",
+                    new_address: "충남 천안시 동남구 망향로 201",
+                    old_address: "안서동 산 16-5",
+                    phone: "1588-0063",
+                });
+            }
+            if (keyword === '내과') {
+                var internalMedicineHospitals = [
+                    {
+                        content: '<div>김현응내과의원</div>', latlng: new kakao.maps.LatLng(36.822810, 127.154324),
+                        name: "김현응내과의원", new_address: "충남 천안시 동남구", old_address: "신부동 567", phone: "041-563-9858"
+                    },
+                    {
+                        content: '<div>속편한내과의원</div>', latlng: new kakao.maps.LatLng(36.819056, 127.159436),
+                        name: "속편한내과의원", new_address: "충남 천안시 동남구 만남로 64 나은빌딩 3층 302호", old_address: "신부동 468-3", phone: "041-551-6368"
+                    },
+                    {
+                        content: '<div>김철현내과의원</div>', latlng: new kakao.maps.LatLng(36.817023, 127.158500),
+                        name: "김철현내과의원", new_address: "충남 천안시 동남구 충절로 25 3층", old_address: "신부동 473-9", phone: "041-522-1900"
+                    },
+                    {
+                        content: '<div>김재하내과의원</div>', latlng: new kakao.maps.LatLng(36.818491, 127.156590),
+                        name: "김재하내과의원", new_address: "충남 천안시 동남구 만남로 42 5층", old_address: "신부동 462-2", phone: "041-558-8500"
+                    },
+                    {
+                        content: '<div>준내과의원</div>', latlng: new kakao.maps.LatLng(36.827292, 127.129520),
+                        name: "준내과의원", new_address: "충남 천안시 서북구 늘푸른5길 22 골드프라자 302호", old_address: "두정동 664", phone: "041-561-7752"
+                    },
+                    {
+                        content: '<div>천안OK내과의원</div>', latlng: new kakao.maps.LatLng(36.833002, 127.145798),
+                        name: "천안OK내과의원", new_address: "충남 천안시 서북구 두정로 258 4층", old_address: "두정동 71-4", phone: "041-553-2479"
+                    },
+                    {
+                        content: '<div>서울삼성내과의원</div>', latlng: new kakao.maps.LatLng(36.833655, 127.128364),
+                        name: "서울삼성내과의원", new_address: "충남 천안시 서북구 두정로 104 2층", old_address: "두정동 537", phone: "041-553-7870"
+                    },
+                    {
+                        content: '<div>세인트내과의원</div>', latlng: new kakao.maps.LatLng(36.831078, 127.132947),
+                        name: "세인트내과의원", new_address: "충남 천안시 서북구 서부대로 717", old_address: "두정동 782", phone: "041-622-5800"
+                    }
+                ];
+
+                // 내과병원 정보를 'hospitals' 배열에 추가
+                hospitals = hospitals.concat(internalMedicineHospitals);
+            }
+
+            if (keyword === '안과') {
+                var ophthalmologyHospitals = [
+                    {
+                        content: '<div>천안 나안과</div>', latlng: new kakao.maps.LatLng(36.8169388, 127.1584625),
+                        name: "천안 나안과", new_address: "충남 천안시 동남구 충절로 23-1 3층, 4층, 5층", old_address: "신부동 473-2", phone: "041-563-3551"
+                    },
+                    {
+                        content: '<div>천안서울안과</div>', latlng: new kakao.maps.LatLng(36.8185217, 127.1554020),
+                        name: "천안서울안과", new_address: "충남 천안시 동남구 만남로 30 로얄빌딩 7층", old_address: "신부동 461-13", phone: "041-522-6767"
+                    },
+                    {
+                        content: '<div>밝은안과의원</div>', latlng: new kakao.maps.LatLng(36.8193258, 127.1544973),
+                        name: "밝은안과의원", new_address: "충남 천안시 동남구 만남로 43", old_address: "신부동 363-1", phone: "041-555-5363"
+                    },
+                    {
+                        content: '<div>천안드림안과</div>', latlng: new kakao.maps.LatLng(36.8261634, 127.1377389),
+                        name: "천안드림안과", new_address: "충남 천안시 서북구 동서대로 129 4층", old_address: "성정동 1535", phone: "041-622-1331"
+                    },
+                    {
+                        content: '<div>서울하나안과</div>', latlng: new kakao.maps.LatLng(36.8263456, 127.1366049),
+                        name: "서울하나안과", new_address: "충남 천안시 서북구 동서대로 119 제이타워 2~5층", old_address: "성정동 1263", phone: "041-563-6000"
+                    }
+                ];
+
+                hospitals = hospitals.concat(ophthalmologyHospitals);
+            }
+            if (keyword === '이비인후과') {
+                var otorhinolaryngologyHospitals = [
+                    {
+                        content: '<div>우리이비인후과</div>', latlng: new kakao.maps.LatLng(36.81926, 127.1546),
+                        name: "우리이비인후과", new_address: "충남 천안시 동남구 만남로 43 두루두루빌딩 5층", old_address: "신부동 363-2", phone: "041-556-0011"
+                    },
+                    {
+                        content: '<div>천안드림이비인후과</div>', latlng: new kakao.maps.LatLng(36.81842, 127.1579),
+                        name: "천안드림이비인후과", new_address: "충남 천안시 동남구 충절로 6", old_address: "신부동 462-8", phone: "041-554-7575"
+                    },
+                    {
+                        content: '<div>이승주이비인후과</div>', latlng: new kakao.maps.LatLng(36.8184376, 127.1579626),
+                        name: "이승주이비인후과", new_address: "충청남도 천안시 동남구 충절로 6", old_address: "충남 천안시 동남구 신부동 462-8", phone: "정보없음"
+                    },
+                    {
+                        content: '<div>플러스이비인후과</div>', latlng: new kakao.maps.LatLng(36.8330263, 127.1442180),
+                        name: "플러스이비인후과", new_address: "충남 천안시 서북구 두정로 244 필레오프라자 304호", old_address: "두정동 1497", phone: "041-565-1213"
+                    }
+                ];
+
+                // 이비인후과병원 정보를 'hospitals' 배열에 추가
+                hospitals = hospitals.concat(otorhinolaryngologyHospitals);
+            }
+            if (keyword === '정형외과') {
+                var orthopedicHospitals = [
+                    {
+                        content: '<div>민상혁기둥정형외과</div>', latlng: new kakao.maps.LatLng(36.82044, 127.1617),
+                        name: "민상혁기둥정형외과의원", new_address: "충남 천안시 동남구 만남로 90 2~5층", old_address: "신부동 495-3", phone: "041-415-1100"
+                    },
+                    {
+                        content: '<div>최완석정형외과</div>', latlng: new kakao.maps.LatLng(36.81662, 127.1585),
+                        name: "최완석정형외과", new_address: "충남 천안시 동남구 충절로 27 2동 1, 2층", old_address: "신부동 473-9", phone: "041-556-8780"
+                    },
+                    {
+                        content: '<div>신부정형외과</div>', latlng: new kakao.maps.LatLng(36.8217771, 127.1525032),
+                        name: "신부정형외과의원", new_address: "충남 천안시 동남구 방죽안2길 1 2층", old_address: "신부동 322-2 2층", phone: "041-554-1005"
+                    },
+                    {
+                        content: '<div>나은필병원</div>', latlng: new kakao.maps.LatLng(36.81912, 127.1594),
+                        name: "나은필병원", new_address: "충남 천안시 동남구 만남로 64 4~9층", old_address: "신부동 468-3", phone: "041-417-0001"
+                    },
+                    {
+                        content: '<div>가톨릭정형외과</div>', latlng: new kakao.maps.LatLng(36.83485, 127.1458),
+                        name: "가톨릭정형외과의원", new_address: "충남 천안시 서북구 봉정로 370 3,4층", old_address: "두정동 155", phone: "041-621-8275"
+                    },
+                    {
+                        content: '<div>바른정형외과</div>', latlng: new kakao.maps.LatLng(36.83354, 127.1458),
+                        name: "바른정형외과", new_address: "충남 천안시 서북구 봉정로 356 4층 401~405호", old_address: "두정동 161-1", phone: "041-417-7551"
+                    },
+                    {
+                        content: '<div>두정의원</div>', latlng: new kakao.maps.LatLng(36.83236, 127.1331),
+                        name: "두정의원", new_address: "충남 천안시 서북구 서부대로 731 수광빌딩 2, 3층", old_address: "두정동 719", phone: "041-622-2213"
+                    },
+                    {
+                        content: '<div>굿모닝정형외과</div>', latlng: new kakao.maps.LatLng(36.83369, 127.1283),
+                        name: "굿모닝정형외과", new_address: "충남 천안시 서북구 두정로 104", old_address: "두정동 537", phone: "041-565-8877"
+                    }
+                ];
+                hospitals = hospitals.concat(orthopedicHospitals);
+            }
+            if (keyword === '소아과') {
+                var babyhospitals = [
+                    {
+                        content: '<div>미래아이소아과</div>', latlng: new kakao.maps.LatLng(36.81858, 127.1573),
+                        name: "미래아이소아과", new_address: "충남 천안시 동남구 만남로 48", old_address: "신부동 462-5", phone: "041-569-6655"
+                    },
+                    {
+                        content: '<div>이혜영소아과</div>', latlng: new kakao.maps.LatLng(36.82837, 127.1334),
+                        name: "이혜영소아과", new_address: "충남 천안시 서북구 서부대로 688", old_address: "성정동 1229", phone: "041-567-4575"
+                    },
+                    {
+                        content: '<div>리즈앤마리안소아과</div>', latlng: new kakao.maps.LatLng(36.83336, 127.1395),
+                        name: "리즈앤마리안소아과", new_address: "충남 천안시 서북구 두정로 204", old_address: " 두정동 1289", phone: "041-523-6100"
+                    },
+                    {
+                        content: '<div>연세키즈소아과</div>', latlng: new kakao.maps.LatLng(36.83425, 127.1458),
+                        name: "연세키즈소아과", new_address: "충남 천안시 서북구 봉정로 362", old_address: "두정동 160", phone: "041-567-7582"
+                    }
+                ];
+                hospitals = hospitals.concat(babyhospitals);
+            }
+            if (keyword === '신경외과') {
+                var neurosurgeryhospitals = [
+                    {
+                        content: '<div>홍성조신경외과</div>', latlng: new kakao.maps.LatLng(36.81903, 127.1535),
+                        name: "홍성조신경외과", new_address: "충남 천안시 동남구 만남로 11", old_address: "신부동 363-10", phone: "041-555-2578"
+                    },
+                    {
+                        content: '<div>도화범신경외과</div>', latlng: new kakao.maps.LatLng(36.81825, 127.1528),
+                        name: "도화범신경외과", new_address: "충남 천안시 동남구 만남로 6 8층", old_address: "신부동 451-1", phone: "041-552-1050"
+                    },
+                    {
+                        content: '<div>천안21세기신경외과</div>', latlng: new kakao.maps.LatLng(36.83661, 127.1379),
+                        name: "천안21세기신경외과", new_address: "충남 천안시 서북구 두정동 1036", old_address: "부성6길 39-11", phone: "1522-7634"
+                    }
+                ];
+
+
+                hospitals = hospitals.concat(neurosurgeryhospitals);
+            }
+            // 새로운 마커에 정보 생성 (기존에 있던거)
+            for (var i = 0; i < hospitals.length; i++) {
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: hospitals[i].latlng
+                });
+
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: hospitals[i].content
+                });
+
+                markers.push(marker);
+
+                (function (marker, infowindow) {
+                    new kakao.maps.event.addListener(marker, 'mouseover', function () {
+                        infowindow.open(map, marker);
+                    });
+
+                    new kakao.maps.event.addListener(marker, 'mouseout', function () {
+                        infowindow.close();
+                    });
+                })(marker, infowindow);
+            }
+
+            return hospitals;
+        }
+
+        function getListItem(places) {
+            var el = document.createElement('li'),
+                itemStr = '<span class="markerbg marker_' + (places.index) + '"></span>' +
+                    '<div class="info">' +
+                    '   <h5>' + places.name + '</h5>';
+            itemStr += '    <span>' + places.new_address + '</span>' + '<br>' +
+                '   <span class="jibun gray">' + places.old_address + '</span>' + '<br>';
+
+            itemStr += 'tel☎ : <a href="tel:' + places.phone + '" class="tel">' + places.phone + '</tel>' +
+                '</div>';
+
+            el.innerHTML = itemStr;
+            el.className = 'placeInfo';
+
+            return el;
+        }
+
+        function showListItem(elements) {
+            var fragment = document.createDocumentFragment();
+            fragment.appendChild(elements);
+            return fragment;
+        }
+
+        function clicked(keyword) {
+            var listEl = document.getElementById("infoList");
+            listEl.replaceChildren();
+            var base = document.createElement('div');
+            base.style.width = '245px';
+            base.style.height = '200px';
+            listEl.appendChild(base);
+            var arr = showHospitals(keyword);
+            for (var i = 0; i < arr.length; i++) {
+                var item = getListItem(arr[i]);
+                listEl.appendChild(showListItem(item))
+            }
+        }
+
+    </script>
+
 </body>
-<script src = "app.js"></script>
+
 </html>
